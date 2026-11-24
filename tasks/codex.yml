@@ -34,28 +34,19 @@
     validate: /usr/bin/testparm -s %s
   register: samba_config
 
-- name: Set the shared Linux and Samba password
-  no_log: true
-  block:
-    - name: Set the Linux account password
-      ansible.builtin.command:
-        cmd: /usr/sbin/chpasswd
-        stdin: "{{ local_username }}:{{ codex_password }}"
-
-    - name: Set the Samba account password
-      ansible.builtin.command:
-        argv:
-          - smbpasswd
-          - -s
-          - -a
-          - "{{ local_username }}"
-        stdin: "{{ codex_password }}\n{{ codex_password }}"
-
 - name: Enable and run the Samba file server
   ansible.builtin.systemd:
     name: smbd.service
     enabled: true
     state: "{{ 'restarted' if samba_config.changed else 'started' }}"
+
+- name: Set the shared Linux and Samba password
+  codex_passwords:
+    username: "{{ local_username }}"
+    password: "{{ codex_password }}"
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  no_log: true
 
 - name: Install the Codex app server unit
   ansible.builtin.template:
@@ -66,9 +57,18 @@
     mode: '0644'
   register: codex_service_unit
 
+- name: Read the Codex unit reload state
+  ansible.builtin.command: systemctl show --property=NeedDaemonReload --value codex.service
+  register: codex_reload_state
+  changed_when: false
+  check_mode: false
+  when: not codex_service_unit.changed
+
 - name: Enable and run the Codex app server
+  vars:
+    codex_reload_needed: "{{ codex_service_unit.changed or codex_reload_state.stdout == 'yes' }}"
   ansible.builtin.systemd:
     name: codex.service
     enabled: true
-    daemon_reload: true
-    state: "{{ 'restarted' if codex_service_unit.changed else 'started' }}"
+    daemon_reload: "{{ codex_reload_needed }}"
+    state: "{{ 'restarted' if codex_reload_needed else 'started' }}"

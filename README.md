@@ -18,7 +18,7 @@ cd codex-bootstrap
 ansible-playbook bootstrap.yml
 ```
 
-When the playbook prompts, enter and confirm the password for `codex`. Input is hidden. Each run sets that password for both the Linux account and the `projects` Samba share.
+When the playbook prompts, enter and confirm the password for `codex`. Input is hidden. The playbook updates the Linux and Samba passwords independently when they differ from the password you entered.
 
 For first-time setup, start ChatGPT device login as the `codex` service user from the same root shell.
 

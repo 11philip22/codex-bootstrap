@@ -18,6 +18,7 @@
       - pkg-config
       - ripgrep
       - samba
+      - python3-samba
       - xz-utils
     state: present
 
