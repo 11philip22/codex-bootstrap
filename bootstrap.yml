@@ -83,3 +83,6 @@
 
     - name: Set up the Codex machine
       ansible.builtin.import_tasks: tasks/codex.yml
+
+    - name: Configure the Codex user's desktop
+      ansible.builtin.import_tasks: tasks/codex-userconfig.yml

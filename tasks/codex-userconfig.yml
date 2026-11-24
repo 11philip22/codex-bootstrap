@@ -1,0 +1,43 @@
+---
+- name: Create the local wallpapers directory
+  ansible.builtin.file:
+    path: /usr/local/share/backgrounds
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install the stars wallpaper
+  ansible.builtin.copy:
+    src: wallpapers/stars-space.jpg
+    dest: /usr/local/share/backgrounds/stars-space.jpg
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Install the XFCE wallpaper helper
+  ansible.builtin.copy:
+    src: xfce/set-wallpaper.py
+    dest: /usr/local/bin/codex-xfce-wallpaper
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Configure the wallpaper at XFCE login
+  become_user: "{{ local_username }}"
+  block:
+    - name: Create the user's autostart directory
+      ansible.builtin.file:
+        path: ~/.config/autostart
+        state: directory
+
+    - name: Apply the stars wallpaper in the user's XFCE session
+      ansible.builtin.copy:
+        dest: ~/.config/autostart/codex-wallpaper.desktop
+        mode: '0644'
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=Set desktop wallpaper
+          Exec=/usr/local/bin/codex-xfce-wallpaper
+          OnlyShowIn=XFCE;
