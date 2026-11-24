@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Debian or Ubuntu on x86-64 or ARM64, with Node.js 16 or newer available from the distribution's repositories.
+- Debian or Ubuntu on x86-64 or ARM64, booted with systemd, with Node.js 16 or newer available from the distribution's repositories.
 - Root access and an internet connection to GitHub and the package repositories.
 
 ## Run

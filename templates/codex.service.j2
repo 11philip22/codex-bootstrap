@@ -1,0 +1,12 @@
+[Unit]
+Description=Codex app server
+
+[Service]
+User={{ local_username }}
+WorkingDirectory=~
+ExecStart=/usr/local/bin/codex app-server --listen ws://127.0.0.1:4500
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

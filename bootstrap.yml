@@ -14,3 +14,6 @@
 
     - name: Install packages
       ansible.builtin.import_tasks: tasks/packages.yml
+
+    - name: Configure the Codex service
+      ansible.builtin.import_tasks: tasks/codex-service.yml
