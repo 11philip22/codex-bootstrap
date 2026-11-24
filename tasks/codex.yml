@@ -1,0 +1,55 @@
+---
+- name: Ensure the user and home directory exist
+  ansible.builtin.user:
+    name: "{{ local_username }}"
+    state: present
+    create_home: true
+
+- name: Grant the local user passwordless sudo
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/99-codex-bootstrap
+    content: "{{ local_username }} ALL=(ALL:ALL) NOPASSWD: ALL\n"
+    owner: root
+    group: root
+    mode: '0440'
+    validate: /usr/sbin/visudo -cf %s
+
+- name: Create the projects directory for the local user
+  ansible.builtin.file:
+    path: "{{ projects_dir }}"
+    state: directory
+    owner: "{{ local_username }}"
+    mode: u+rwx
+
+- name: Install the Samba file server configuration
+  ansible.builtin.template:
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+    validate: /usr/bin/testparm -s %s
+  register: samba_config
+
+- name: Enable and run the Samba file server
+  ansible.builtin.systemd:
+    name: smbd.service
+    enabled: true
+    state: "{{ 'restarted' if samba_config.changed else 'started' }}"
+
+- name: Install the Codex app server unit
+  ansible.builtin.template:
+    src: codex.service.j2
+    dest: /etc/systemd/system/codex.service
+    owner: root
+    group: root
+    mode: '0644'
+  register: codex_service_unit
+
+- name: Enable and run the Codex app server
+  ansible.builtin.systemd:
+    name: codex.service
+    enabled: true
+    daemon_reload: true
+    state: "{{ 'restarted' if codex_service_unit.changed else 'started' }}"
