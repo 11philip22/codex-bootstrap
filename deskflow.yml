@@ -5,6 +5,9 @@
   gather_facts: false
   become: true
 
+  vars:
+    local_username: codex
+
   tasks:
     - name: Install Deskflow
       ansible.builtin.package:
