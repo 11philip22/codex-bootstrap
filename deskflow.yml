@@ -1,0 +1,31 @@
+---
+- name: Install Deskflow and start it at XFCE login
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Install Deskflow
+      ansible.builtin.package:
+        name: deskflow
+        state: present
+
+    - name: Configure Deskflow for the desktop user
+      become_user: "{{ local_username }}"
+      block:
+        - name: Create the user's autostart directory
+          ansible.builtin.file:
+            path: ~/.config/autostart
+            state: directory
+
+        - name: Start Deskflow at XFCE login
+          ansible.builtin.copy:
+            dest: ~/.config/autostart/org.deskflow.deskflow.desktop
+            mode: '0644'
+            content: |
+              [Desktop Entry]
+              Type=Application
+              Name=Deskflow
+              Exec=/usr/bin/deskflow
+              OnlyShowIn=XFCE;

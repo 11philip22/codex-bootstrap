@@ -6,7 +6,6 @@
   become: true
 
   vars:
-    local_username: codex
     projects_dir: /srv/projects
     account_setup_file: "/etc/codex-bootstrap-{{ local_username }}.yml"
     selected_github_username: "{{ github_username if github_username is defined else github_prompt.user_input }}"
