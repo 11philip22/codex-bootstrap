@@ -11,7 +11,7 @@ On the Debian machine, log in as `root` or open a root shell with `su -`. If you
 
 ```sh
 apt-get update
-apt-get install -y ca-certificates git sudo ansible-core python3-apt
+apt-get install -y ca-certificates git ansible-core python3-apt
 
 git clone https://github.com/11philip22/codex-bootstrap.git
 cd codex-bootstrap

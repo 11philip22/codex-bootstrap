@@ -20,6 +20,18 @@
       - xz-utils
     state: present
 
+- name: Install Docker Engine and its CLI
+  ansible.builtin.apt:
+    name: docker.io
+    state: present
+    install_recommends: true  # Debian 13 packages the CLI as a recommendation.
+
+- name: Start Docker and enable it at boot
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
 - name: Install the OpenAI Codex CLI
   ansible.builtin.command:
     cmd: npm install --global --prefix /usr/local --engine-strict @openai/codex
