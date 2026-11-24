@@ -15,13 +15,6 @@
           - (lookup('ansible.builtin.file', '/etc/X11/default-display-manager', errors='ignore') | default('', true) | basename) == 'lightdm'
         fail_msg: Deskflow boot login requires LightDM as the default display manager on this machine.
 
-    - name: Install Deskflow and the X11 screen locker
-      ansible.builtin.package:
-        name:
-          - deskflow
-          - i3lock
-        state: present
-
     - name: Configure Deskflow for the desktop user
       become_user: "{{ local_username }}"
       block:

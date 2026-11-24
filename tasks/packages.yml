@@ -21,6 +21,8 @@
       - pkg-config
       - ripgrep
       - htop
+      - deskflow
+      - i3lock
       - samba
       - python3-samba
       - xz-utils
