@@ -10,6 +10,11 @@
     projects_dir: /srv/projects
 
   vars_prompt:
+    - name: github_username
+      prompt: GitHub username whose SSH keys should have access to the Codex account
+      private: false
+      unsafe: true
+
     - name: codex_password
       prompt: Linux and Samba password for the Codex account
       private: true
@@ -17,6 +22,13 @@
       unsafe: true
 
   pre_tasks:
+    - name: Require a GitHub username
+      ansible.builtin.fail:
+        msg: Enter a GitHub username, without a URL or leading @.
+      when: >-
+        github_username is not string or
+        github_username is not match('^[a-zA-Z0-9][a-zA-Z0-9_-]{0,38}\Z')
+
     - name: Require a nonempty single-line password
       ansible.builtin.fail:
         msg: Enter a nonempty, single-line password for the Codex account.
@@ -24,6 +36,18 @@
         codex_password is not string or
         not codex_password or
         codex_password is search('[\r\n\x00]')
+
+    - name: Fetch the GitHub account's public SSH keys
+      ansible.builtin.uri:
+        url: "https://github.com/{{ github_username }}.keys"
+        return_content: true
+      register: github_ssh_keys
+      check_mode: false
+
+    - name: Require at least one public SSH key
+      ansible.builtin.fail:
+        msg: "GitHub account {{ github_username }} has no public SSH keys. Add an authentication key and rerun the playbook."
+      when: github_ssh_keys.content | trim | length == 0
 
   tasks:
     - name: Install packages

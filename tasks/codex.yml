@@ -7,6 +7,13 @@
     shell: /bin/bash
     create_home: true
 
+- name: Authorize the GitHub account's SSH keys for the Codex user
+  ansible.posix.authorized_key:
+    user: "{{ local_username }}"
+    key: "{{ github_ssh_keys.content }}"
+    state: present
+    exclusive: false
+
 - name: Grant the local user passwordless sudo
   ansible.builtin.copy:
     dest: /etc/sudoers.d/99-codex-bootstrap
