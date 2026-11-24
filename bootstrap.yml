@@ -7,13 +7,20 @@
 
   vars:
     local_username: codex
+    projects_dir: /srv/projects
 
   tasks:
     - name: Configure the local user
       ansible.builtin.import_tasks: tasks/codex-user.yml
 
+    - name: Configure the projects directory
+      ansible.builtin.import_tasks: tasks/workdir.yml
+
     - name: Install packages
       ansible.builtin.import_tasks: tasks/packages.yml
+
+    - name: Share the projects directory with Samba
+      ansible.builtin.import_tasks: tasks/samba.yml
 
     - name: Configure the Codex service
       ansible.builtin.import_tasks: tasks/codex-service.yml

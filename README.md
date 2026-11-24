@@ -17,3 +17,23 @@ git clone https://github.com/11philip22/codex-bootstrap.git
 cd codex-bootstrap
 ansible-playbook bootstrap.yml
 ```
+
+From the same root shell, set the separate Samba password for `codex` to enable access to the `projects` share. Enter it twice when prompted on first-time setup.
+
+```sh
+smbpasswd -a codex
+```
+
+For first-time setup, start ChatGPT device login as the `codex` service user from the same root shell.
+
+```sh
+su - codex -c 'codex login --device-auth'
+```
+
+Open the URL printed by Codex in your browser and enter the code. If device login is disabled, enable it in your ChatGPT security settings or ask your workspace admin to enable it.
+
+After sign-in succeeds, restart the service to load the credentials.
+
+```sh
+systemctl restart codex.service
+```

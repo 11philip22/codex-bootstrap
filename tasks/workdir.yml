@@ -1,0 +1,7 @@
+---
+- name: Create the projects directory for the local user
+  ansible.builtin.file:
+    path: "{{ projects_dir }}"
+    state: directory
+    owner: "{{ local_username }}"
+    mode: u+rwx

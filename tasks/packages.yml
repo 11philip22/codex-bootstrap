@@ -17,6 +17,7 @@
       - cmake
       - pkg-config
       - ripgrep
+      - samba
       - xz-utils
     state: present
 
