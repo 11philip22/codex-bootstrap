@@ -1,0 +1,49 @@
+---
+- name: Install system packages
+  ansible.builtin.package:
+    name:
+      - nodejs
+      - npm
+      - python3
+      - python3-dev
+      - python3-venv
+      - rustc
+      - cargo
+      - rustfmt
+      - rust-clippy
+      - golang-go
+      - build-essential
+      - clang
+      - cmake
+      - pkg-config
+      - ripgrep
+      - xz-utils
+    state: present
+
+- name: Install the OpenAI Codex CLI
+  ansible.builtin.command:
+    cmd: npm install --global --prefix /usr/local --engine-strict @openai/codex
+    creates: /usr/local/bin/codex
+
+- name: Install uv in its own virtual environment
+  ansible.builtin.pip:
+    name: uv
+    state: present
+    virtualenv: /opt/uv
+    virtualenv_command: /usr/bin/python3 -m venv
+    umask: '0022'
+
+- name: Make uv available system-wide
+  ansible.builtin.file:
+    src: /opt/uv/bin/uv
+    dest: /usr/local/bin/uv
+    state: link
+
+- name: Read installed Debian packages
+  ansible.builtin.package_facts:
+    manager: apt
+
+- name: Install Google Chrome Stable
+  ansible.builtin.apt:
+    deb: "https://dl.google.com/linux/direct/google-chrome-stable_current_{{ ansible_facts.packages.dpkg[0].arch }}.deb"
+  when: "'google-chrome-stable' not in ansible_facts.packages"

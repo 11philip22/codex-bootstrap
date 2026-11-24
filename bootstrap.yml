@@ -1,0 +1,16 @@
+---
+- name: Bootstrap the local Linux machine
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: true
+
+  vars:
+    local_username: codex
+
+  tasks:
+    - name: Configure the local user
+      ansible.builtin.import_tasks: tasks/user.yml
+
+    - name: Install packages
+      ansible.builtin.import_tasks: tasks/packages.yml
