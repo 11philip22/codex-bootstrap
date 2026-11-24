@@ -71,6 +71,11 @@
   check_mode: false
   when: not codex_service_unit.changed
 
+- name: Sign in to Codex as the service user
+  codex_device_login:
+    user: "{{ local_username }}"
+  register: codex_login
+
 - name: Enable and run the Codex app server
   vars:
     codex_reload_needed: "{{ codex_service_unit.changed or codex_reload_state.stdout == 'yes' }}"
@@ -78,7 +83,7 @@
     name: codex.service
     enabled: true
     daemon_reload: "{{ codex_reload_needed }}"
-    state: "{{ 'restarted' if codex_reload_needed else 'started' }}"
+    state: "{{ 'restarted' if codex_reload_needed or codex_login is changed else 'started' }}"
 
 - name: Wait for the Codex app server
   ansible.builtin.uri:
