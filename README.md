@@ -20,8 +20,8 @@ cd codex-bootstrap
 ansible-playbook bootstrap.yml
 ```
 
-Enter the GitHub username when prompted. The playbook adds all public SSH authentication keys from that account to `codex`. Removing a key on GitHub does not revoke it on this machine.
+On the first run, enter the GitHub username, then enter and confirm the shared Linux and Samba password for `codex`. Password input is hidden. Machines set up with an older version prompt once on upgrade.
 
-Enter and confirm the password for `codex` at the next prompt. Input is hidden. The playbook updates the Linux and Samba passwords independently when they differ from the password you entered.
+Later runs use the saved GitHub username to add new public SSH keys and keep the existing passwords. Removing a key on GitHub does not revoke it on this machine. To set a new shared password, supply `codex_password` in an Ansible Vault file with `ansible-playbook bootstrap.yml -e @secrets.yml --ask-vault-pass`.
 
 If the `codex` user is signed out, the playbook prints a URL and a one-time code. Open the URL in your browser and enter the code. The playbook waits for approval, then starts or restarts the service. Subsequent runs skip login while the user is signed in.

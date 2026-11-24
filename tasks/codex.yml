@@ -50,10 +50,20 @@
 - name: Set the shared Linux and Samba password
   codex_passwords:
     username: "{{ local_username }}"
-    password: "{{ codex_password }}"
+    password: "{{ shared_password }}"
   vars:
     ansible_python_interpreter: /usr/bin/python3
   no_log: true
+  when: not account_setup.stat.exists or codex_password is defined
+
+- name: Remember the GitHub username after account setup succeeds
+  ansible.builtin.copy:
+    dest: "{{ account_setup_file }}"
+    content: |
+      github_username: {{ selected_github_username | to_json }}
+    owner: root
+    group: root
+    mode: '0644'
 
 - name: Install the Codex app server unit
   ansible.builtin.template:

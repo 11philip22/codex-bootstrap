@@ -8,45 +8,73 @@
   vars:
     local_username: codex
     projects_dir: /srv/projects
-
-  vars_prompt:
-    - name: github_username
-      prompt: GitHub username whose SSH keys should have access to the Codex account
-      private: false
-      unsafe: true
-
-    - name: codex_password
-      prompt: Linux and Samba password for the Codex account
-      private: true
-      confirm: true
-      unsafe: true
+    account_setup_file: "/etc/codex-bootstrap-{{ local_username }}.yml"
+    selected_github_username: "{{ github_username if github_username is defined else github_prompt.user_input }}"
+    shared_password: "{{ codex_password if codex_password is defined else password_prompt.user_input }}"
 
   pre_tasks:
+    - name: Check for completed account setup
+      ansible.builtin.stat:
+        path: "{{ account_setup_file }}"
+      register: account_setup
+
+    - name: Load the saved GitHub username
+      ansible.builtin.include_vars:
+        file: "{{ account_setup_file }}"
+      when: account_setup.stat.exists and github_username is not defined
+
+    - name: Ask for the GitHub username on first setup
+      ansible.builtin.pause:
+        prompt: GitHub username whose SSH keys should have access to the Codex account
+      register: github_prompt
+      when: github_username is not defined
+
     - name: Require a GitHub username
       ansible.builtin.fail:
         msg: Enter a GitHub username, without a URL or leading @.
       when: >-
-        github_username is not string or
-        github_username is not match('^[a-zA-Z0-9][a-zA-Z0-9_-]{0,38}\Z')
+        selected_github_username is not string or
+        selected_github_username is not match('^[a-zA-Z0-9][a-zA-Z0-9_-]{0,38}\Z')
+
+    - name: Ask for the shared password on first setup
+      when: not account_setup.stat.exists and codex_password is not defined
+      block:
+        - name: Enter the Linux and Samba password
+          ansible.builtin.pause:
+            prompt: Linux and Samba password for the Codex account
+            echo: false
+          register: password_prompt
+          no_log: true
+
+        - name: Confirm the Linux and Samba password
+          ansible.builtin.pause:
+            prompt: Confirm the password for the Codex account
+            echo: false
+          register: password_confirmation
+          no_log: true
+
+        - name: Require matching passwords
+          ansible.builtin.fail:
+            msg: The passwords did not match.
+          when: password_prompt.user_input != password_confirmation.user_input
 
     - name: Require a nonempty single-line password
       ansible.builtin.fail:
         msg: Enter a nonempty, single-line password for the Codex account.
-      when: >-
-        codex_password is not string or
-        not codex_password or
-        codex_password is search('[\r\n\x00]')
+      when:
+        - not account_setup.stat.exists or codex_password is defined
+        - shared_password is not string or not shared_password or shared_password is search('[\r\n\x00]')
 
     - name: Fetch the GitHub account's public SSH keys
       ansible.builtin.uri:
-        url: "https://github.com/{{ github_username }}.keys"
+        url: "https://github.com/{{ selected_github_username }}.keys"
         return_content: true
       register: github_ssh_keys
       check_mode: false
 
     - name: Require at least one public SSH key
       ansible.builtin.fail:
-        msg: "GitHub account {{ github_username }} has no public SSH keys. Add an authentication key and rerun the playbook."
+        msg: "GitHub account {{ selected_github_username }} has no public SSH keys. Add an authentication key and rerun the playbook."
       when: github_ssh_keys.content | trim | length == 0
 
   tasks:
