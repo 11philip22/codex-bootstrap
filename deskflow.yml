@@ -1,5 +1,5 @@
 ---
-- name: Install Deskflow and start it at XFCE login
+- name: Start Deskflow in a locked XFCE session at boot
   hosts: localhost
   connection: local
   gather_facts: false
@@ -9,9 +9,17 @@
     local_username: codex
 
   tasks:
-    - name: Install Deskflow
+    - name: Require LightDM for automatic login
+      ansible.builtin.assert:
+        that:
+          - (lookup('ansible.builtin.file', '/etc/X11/default-display-manager', errors='ignore') | default('', true) | basename) == 'lightdm'
+        fail_msg: Deskflow boot login requires LightDM as the default display manager on this machine.
+
+    - name: Install Deskflow and the X11 screen locker
       ansible.builtin.package:
-        name: deskflow
+        name:
+          - deskflow
+          - i3lock
         state: present
 
     - name: Configure Deskflow for the desktop user
@@ -32,3 +40,49 @@
               Name=Deskflow
               Exec=/usr/bin/deskflow
               OnlyShowIn=XFCE;
+
+    - name: Install the locked XFCE session launcher
+      ansible.builtin.copy:
+        dest: /usr/local/bin/deskflow-locked-xfce
+        owner: root
+        group: root
+        mode: '0755'
+        content: |
+          #!/bin/sh
+          # i3lock returns once it has grabbed input. Start the desktop only after that.
+          /usr/bin/i3lock -c 202020 || exit 1
+          exec /usr/bin/startxfce4
+
+    - name: Register the locked X11 session with LightDM
+      ansible.builtin.copy:
+        dest: /usr/share/xsessions/deskflow-locked-xfce.desktop
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=XFCE with Deskflow (locked)
+          DesktopNames=XFCE;
+          Exec=/usr/local/bin/deskflow-locked-xfce
+          TryExec=/usr/bin/startxfce4
+
+    - name: Create the LightDM configuration directory
+      ansible.builtin.file:
+        path: /etc/lightdm/lightdm.conf.d
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Automatically log the desktop user into the locked session at boot
+      ansible.builtin.copy:
+        dest: /etc/lightdm/lightdm.conf.d/90-deskflow-autologin.conf
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          [Seat:seat0]
+          autologin-user={{ local_username }}
+          autologin-user-timeout=0
+          autologin-session=deskflow-locked-xfce
