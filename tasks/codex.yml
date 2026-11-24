@@ -79,3 +79,16 @@
     enabled: true
     daemon_reload: "{{ codex_reload_needed }}"
     state: "{{ 'restarted' if codex_reload_needed else 'started' }}"
+
+- name: Wait for the Codex app server
+  ansible.builtin.uri:
+    url: http://127.0.0.1:4500/readyz
+    status_code: 200
+    use_proxy: false
+    timeout: 3
+  register: codex_ready
+  until: (codex_ready.status | default(0)) == 200
+  retries: 15
+  delay: 2
+  changed_when: false
+  when: not ansible_check_mode
