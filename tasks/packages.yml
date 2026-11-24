@@ -22,6 +22,15 @@
       - xz-utils
     state: present
 
+- name: Install Neofetch
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/dylanaraps/neofetch/7.1.0/neofetch
+    dest: /usr/local/bin/neofetch
+    checksum: sha256:3dc33493e54029fb1528251552093a9f9a2894fcf94f9c3a6f809136a42348c7
+    owner: root
+    group: root
+    mode: '0755'
+
 - name: Install Docker Engine and its CLI
   ansible.builtin.apt:
     name: docker.io
