@@ -9,6 +9,22 @@
     local_username: codex
     projects_dir: /srv/projects
 
+  vars_prompt:
+    - name: codex_password
+      prompt: Linux and Samba password for the Codex account
+      private: true
+      confirm: true
+      unsafe: true
+
+  pre_tasks:
+    - name: Require a nonempty single-line password
+      ansible.builtin.fail:
+        msg: Enter a nonempty, single-line password for the Codex account.
+      when: >-
+        codex_password is not string or
+        not codex_password or
+        codex_password is search('[\r\n\x00]')
+
   tasks:
     - name: Install packages
       ansible.builtin.import_tasks: tasks/packages.yml

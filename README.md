@@ -18,11 +18,7 @@ cd codex-bootstrap
 ansible-playbook bootstrap.yml
 ```
 
-From the same root shell, set the separate Samba password for `codex` to enable access to the `projects` share. Enter it twice when prompted on first-time setup.
-
-```sh
-smbpasswd -a codex
-```
+When the playbook prompts, enter and confirm the password for `codex`. Input is hidden. Each run sets that password for both the Linux account and the `projects` Samba share.
 
 For first-time setup, start ChatGPT device login as the `codex` service user from the same root shell.
 

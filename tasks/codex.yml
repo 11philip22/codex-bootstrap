@@ -32,6 +32,23 @@
     validate: /usr/bin/testparm -s %s
   register: samba_config
 
+- name: Set the shared Linux and Samba password
+  no_log: true
+  block:
+    - name: Set the Linux account password
+      ansible.builtin.command:
+        cmd: /usr/sbin/chpasswd
+        stdin: "{{ local_username }}:{{ codex_password }}"
+
+    - name: Set the Samba account password
+      ansible.builtin.command:
+        argv:
+          - smbpasswd
+          - -s
+          - -a
+          - "{{ local_username }}"
+        stdin: "{{ codex_password }}\n{{ codex_password }}"
+
 - name: Enable and run the Samba file server
   ansible.builtin.systemd:
     name: smbd.service
