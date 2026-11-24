@@ -1,17 +1,19 @@
-# Local Linux bootstrap
+# Codex sanndbox PC bootstrap
 
 ## Requirements
 
 - Debian or Ubuntu on x86-64 or ARM64, with Node.js 16 or newer available from the distribution's repositories.
-- A sudo-enabled account and an internet connection for package downloads.
-- `ansible-core`. If needed, install it with `sudo apt-get update && sudo apt-get install ansible-core`.
+- Root access and an internet connection to GitHub and the package repositories.
 
 ## Run
 
-Run this command from the cloned repository on the Linux machine.
+On the Debian machine, log in as `root` or open a root shell with `su -`. If your account already has sudo access, you can use `sudo -i`.
 
 ```sh
-ansible-playbook bootstrap.yml --ask-become-pass
-```
+apt-get update
+apt-get install -y ca-certificates git sudo ansible-core python3-apt
 
-Enter your sudo password at the `BECOME password` prompt.
+git clone https://github.com/11philip22/codex-bootstrap.git
+cd codex-bootstrap
+ansible-playbook bootstrap.yml
+```
