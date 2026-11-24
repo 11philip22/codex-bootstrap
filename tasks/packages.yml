@@ -18,6 +18,7 @@
       - pkg-config
       - ripgrep
       - htop
+      - deskflow
       - samba
       - python3-samba
       - xz-utils
