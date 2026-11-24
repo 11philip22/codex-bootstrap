@@ -22,11 +22,37 @@
       - xz-utils
     state: present
 
+- name: Create the shared Neofetch directory
+  ansible.builtin.file:
+    path: /usr/local/share/neofetch
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install the Neofetch logo
+  ansible.builtin.copy:
+    src: neofetch/pentagram.txt
+    dest: /usr/local/share/neofetch/pentagram.txt
+    owner: root
+    group: root
+    mode: '0644'
+
 - name: Install Neofetch
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/dylanaraps/neofetch/7.1.0/neofetch
-    dest: /usr/local/bin/neofetch
+    dest: /usr/local/share/neofetch/neofetch
     checksum: sha256:3dc33493e54029fb1528251552093a9f9a2894fcf94f9c3a6f809136a42348c7
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Set the system-wide Neofetch logo
+  ansible.builtin.copy:
+    dest: /usr/local/bin/neofetch
+    content: |
+      #!/bin/sh
+      exec /usr/local/share/neofetch/neofetch --ascii /usr/local/share/neofetch/pentagram.txt "$@"
     owner: root
     group: root
     mode: '0755'
