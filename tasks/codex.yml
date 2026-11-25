@@ -65,6 +65,21 @@
     group: root
     mode: '0644'
 
+- name: Configure the Codex CLI for the login account
+  become_user: "{{ local_username }}"
+  block:
+    - name: Create the user's Codex configuration directory
+      ansible.builtin.file:
+        path: ~/.codex
+        state: directory
+        mode: '0700'
+
+    - name: Install the user's Codex configuration
+      ansible.builtin.copy:
+        src: codex/config.toml
+        dest: ~/.codex/config.toml
+        mode: '0600'
+
 - name: Install the Codex app server unit
   ansible.builtin.template:
     src: codex.service.j2
