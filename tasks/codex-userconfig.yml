@@ -23,7 +23,7 @@
     group: root
     mode: '0755'
 
-- name: Configure the wallpaper at XFCE login
+- name: Configure the desktop at XFCE login
   become_user: "{{ local_username }}"
   block:
     - name: Create the user's autostart directory
@@ -40,4 +40,15 @@
           Type=Application
           Name=Set desktop wallpaper
           Exec=/usr/local/bin/codex-xfce-wallpaper
+          OnlyShowIn=XFCE;
+
+    - name: Set i3lock as the user's XFCE screen locker
+      ansible.builtin.copy:
+        dest: ~/.config/autostart/codex-lock-command.desktop
+        mode: '0644'
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=Configure XFCE screen lock
+          Exec=xfconf-query -c xfce4-session -p /general/LockCommand --create -t string -s "/usr/bin/i3lock -c 202020"
           OnlyShowIn=XFCE;
