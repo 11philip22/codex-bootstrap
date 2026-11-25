@@ -1,4 +1,4 @@
-# Codex sanndbox PC bootstrap
+# Codex sandbox PC bootstrap
 
 ## Requirements
 
