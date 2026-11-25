@@ -39,6 +39,16 @@
         path: ~/.config/autostart
         state: directory
 
+    - name: Disable light-locker autostart for the desktop user
+      ansible.builtin.copy:
+        dest: ~/.config/autostart/light-locker.desktop
+        mode: '0644'
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=Light Locker
+          Hidden=true
+
     - name: Apply the stars wallpaper in the user's XFCE session
       ansible.builtin.copy:
         dest: ~/.config/autostart/codex-wallpaper.desktop
@@ -61,7 +71,7 @@
           Exec=xfconf-query -c xfce4-session -p /general/LockCommand --create -t string -s "/usr/bin/i3lock -c 202020"
           OnlyShowIn=XFCE;
 
-    - name: Disable XFCE idle sleep and display power-off
+    - name: Disable XFCE idle locking, sleep, and display power-off
       ansible.builtin.copy:
         dest: ~/.config/autostart/codex-idle-power.desktop
         mode: '0644'
@@ -69,6 +79,10 @@
           [Desktop Entry]
           Type=Application
           Name=Configure idle power settings
-          TryExec=xfce4-power-manager
           Exec=/usr/local/bin/codex-xfce-idle-power
           OnlyShowIn=XFCE;
+
+- name: Remove the obsolete Deskflow-specific light-locker override
+  ansible.builtin.file:
+    path: /etc/xdg/deskflow/autostart/light-locker.desktop
+    state: absent

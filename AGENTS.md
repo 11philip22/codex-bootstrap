@@ -1,3 +1,9 @@
+# Playbook scope
+
+`bootstrap.yml` and its imported task files own all package installation and all machine and user configuration outside the optional Deskflow boot sequence. This includes XFCE settings, inactivity behavior, and the manual i3lock button.
+
+Limit `deskflow.yml` to LightDM automatic login and the startup of that session. After automatic login, launch Deskflow with the user's saved settings, then run i3lock. Start the XFCE desktop only after i3lock has acquired the lock.
+
 # Host prerequisites
 
 Target machines already have `sudo` installed. Keep it out of the bootstrap package list.

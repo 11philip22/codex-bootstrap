@@ -23,6 +23,7 @@
       - htop
       - deskflow
       - i3lock
+      - x11-xserver-utils
       - samba
       - python3-samba
       - xz-utils

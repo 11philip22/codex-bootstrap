@@ -6,7 +6,7 @@
 - Root access and an internet connection to GitHub and the package repositories.
 - A GitHub account with at least one public SSH authentication key you want to authorize for `codex`.
 - For first-time Codex login, a browser and a ChatGPT account with device code login enabled. If needed, enable it in your ChatGPT security settings or ask your workspace admin to enable it.
-- For automatic Deskflow startup, an XFCE X11 desktop using LightDM, with `xss-lock` available from the configured repositories.
+- For automatic Deskflow startup, an XFCE X11 desktop using LightDM.
 
 ## Run
 
@@ -33,4 +33,10 @@ After bootstrap finishes, sign in to XFCE as `codex`, open Deskflow, and configu
 ansible-playbook deskflow.yml
 ```
 
-On the next reboot, LightDM automatically logs in as `codex`. The session locks the screen and starts XFCE and Deskflow using the user's saved settings. At the dark lock screen, type the `codex` password and press Enter to unlock.
+On the next reboot, LightDM automatically logs in as `codex` and launches Deskflow with the user's saved settings. The session runs i3lock before opening the XFCE desktop. At the dark lock screen, type the `codex` password and press Enter to unlock.
+
+To update a machine already using automatic Deskflow startup, run both playbooks from the updated checkout, then sign back into the Deskflow session.
+
+```sh
+ansible-playbook bootstrap.yml deskflow.yml
+```

@@ -15,51 +15,11 @@
           - (lookup('ansible.builtin.file', '/etc/X11/default-display-manager', errors='ignore') | default('', true) | basename) == 'lightdm'
         fail_msg: Deskflow boot login requires LightDM as the default display manager on this machine.
 
-    - name: Install xss-lock for idle locking in the Deskflow session
-      ansible.builtin.apt:
-        name: xss-lock
-        state: present
-
-    - name: Create the Deskflow session's autostart configuration directory
-      ansible.builtin.file:
-        path: /etc/xdg/deskflow/autostart
-        state: directory
-        owner: root
-        group: root
-        mode: '0755'
-
-    - name: Use i3lock when light-locker would start in the Deskflow session
-      ansible.builtin.copy:
-        dest: /etc/xdg/deskflow/autostart/light-locker.desktop
-        owner: root
-        group: root
-        mode: '0644'
-        content: |
-          [Desktop Entry]
-          Type=Application
-          Name=Lock the Deskflow session
-          TryExec=light-locker
-          Exec=/usr/bin/xss-lock --transfer-sleep-lock -- /usr/bin/i3lock --nofork -c 202020
-          OnlyShowIn=XFCE;
-
-    - name: Configure Deskflow for the desktop user
+    - name: Remove the old login entry now that the boot launcher starts Deskflow
       become_user: "{{ local_username }}"
-      block:
-        - name: Create the user's autostart directory
-          ansible.builtin.file:
-            path: ~/.config/autostart
-            state: directory
-
-        - name: Start Deskflow at XFCE login
-          ansible.builtin.copy:
-            dest: ~/.config/autostart/org.deskflow.deskflow.desktop
-            mode: '0644'
-            content: |
-              [Desktop Entry]
-              Type=Application
-              Name=Deskflow
-              Exec=/usr/bin/deskflow
-              OnlyShowIn=XFCE;
+      ansible.builtin.file:
+        path: ~/.config/autostart/org.deskflow.deskflow.desktop
+        state: absent
 
     - name: Install the locked XFCE session launcher
       ansible.builtin.copy:
@@ -69,9 +29,13 @@
         mode: '0755'
         content: |
           #!/bin/sh
+          /usr/bin/deskflow &
+          deskflow_pid=$!
           # i3lock returns once it has grabbed input. Start the desktop only after that.
-          /usr/bin/i3lock -c 202020 || exit 1
-          export XDG_CONFIG_DIRS="/etc/xdg/deskflow:${XDG_CONFIG_DIRS:-/etc/xdg}"
+          if ! /usr/bin/i3lock -c 202020; then
+              kill "$deskflow_pid"
+              exit 1
+          fi
           exec /usr/bin/startxfce4
 
     - name: Register the locked X11 session with LightDM
