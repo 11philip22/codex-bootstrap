@@ -23,6 +23,14 @@
     group: root
     mode: '0755'
 
+- name: Install the XFCE idle power settings helper
+  ansible.builtin.copy:
+    src: xfce/set-idle-power.sh
+    dest: /usr/local/bin/codex-xfce-idle-power
+    owner: root
+    group: root
+    mode: '0755'
+
 - name: Configure the desktop at XFCE login
   become_user: "{{ local_username }}"
   block:
@@ -51,4 +59,16 @@
           Type=Application
           Name=Configure XFCE screen lock
           Exec=xfconf-query -c xfce4-session -p /general/LockCommand --create -t string -s "/usr/bin/i3lock -c 202020"
+          OnlyShowIn=XFCE;
+
+    - name: Disable XFCE idle sleep and display power-off
+      ansible.builtin.copy:
+        dest: ~/.config/autostart/codex-idle-power.desktop
+        mode: '0644'
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=Configure idle power settings
+          TryExec=xfce4-power-manager
+          Exec=/usr/local/bin/codex-xfce-idle-power
           OnlyShowIn=XFCE;

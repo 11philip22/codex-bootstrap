@@ -6,7 +6,7 @@
 - Root access and an internet connection to GitHub and the package repositories.
 - A GitHub account with at least one public SSH authentication key you want to authorize for `codex`.
 - For first-time Codex login, a browser and a ChatGPT account with device code login enabled. If needed, enable it in your ChatGPT security settings or ask your workspace admin to enable it.
-- For automatic Deskflow startup, an XFCE X11 desktop using LightDM.
+- For automatic Deskflow startup, an XFCE X11 desktop using LightDM, with `xss-lock` available from the configured repositories.
 
 ## Run
 
