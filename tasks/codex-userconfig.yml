@@ -81,3 +81,35 @@
           Name=Configure idle power settings
           Exec=/usr/local/bin/codex-xfce-idle-power
           OnlyShowIn=XFCE;
+
+- name: Configure rxvt-unicode for the desktop user
+  become_user: "{{ local_username }}"
+  block:
+    - name: Create the XFCE and urxvt configuration directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - ~/.config/xfce4
+        - ~/.urxvt/ext
+
+    - name: Install the resize-font Perl extension
+      ansible.builtin.copy:
+        src: urxvt/resize-font
+        dest: ~/.urxvt/ext/resize-font
+        mode: '0644'
+
+    - name: Set the urxvt X resources
+      ansible.builtin.blockinfile:
+        path: ~/.Xresources
+        create: true
+        marker: "! {mark} ANSIBLE MANAGED BLOCK: urxvt"
+        block: "{{ lookup('ansible.builtin.file', 'urxvt/Xresources') }}"
+
+    - name: Set urxvt as the preferred XFCE terminal
+      ansible.builtin.lineinfile:
+        path: ~/.config/xfce4/helpers.rc
+        create: true
+        regexp: '^\s*TerminalEmulator\s*='
+        line: TerminalEmulator=urxvt
+        insertbefore: BOF

@@ -24,6 +24,8 @@
       - deskflow
       - i3lock
       - x11-xserver-utils
+      - rxvt-unicode
+      - xfonts-terminus
       - samba
       - python3-samba
       - xz-utils

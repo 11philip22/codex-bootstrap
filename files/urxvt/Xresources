@@ -1,0 +1,24 @@
+! ----------
+! Urxvt
+! ---------
+URxvt.scrollBar: false
+
+!*background: #000000
+*background: #2d2d2d
+*foreground: #FF9900
+
+!urxvt*depth: 32
+!urxvt*background: rgba:0000/0000/0200/c800
+
+URxvt.cursorColor: magenta
+
+URxvt.perl-ext-common: resize-font
+
+URxvt.font: -*-terminus-medium-r-*-*-14-*-*-*-*-*-iso10646-1
+URxvt.boldFont: -*-terminus-bold-r-*-*-14-*-*-*-*-*-iso10646-1
+URxvt.italicFont: -*-terminus-medium-r-*-*-14-*-*-*-*-*-iso10646-1
+URxvt.boldItalicFont: -*-terminus-bold-r-*-*-14-*-*-*-*-*-iso10646-1
+URxvt.keysym.Control-V: eval:paste_clipboard
+URxvt.keysym.Control-C: eval:selection_to_clipboard
+
+URxvt.geometry: 150x40
