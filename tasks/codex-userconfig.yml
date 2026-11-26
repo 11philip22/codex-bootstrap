@@ -85,6 +85,38 @@
               ;;
       esac
 
+- name: Create the local icons directory
+  ansible.builtin.file:
+    path: /usr/local/share/icons
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install the inverted pentagram Applications menu icon
+  ansible.builtin.copy:
+    src: xfce/applications-pentagram.svg
+    dest: /usr/local/share/icons/codex-applications-pentagram.svg
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Install the XFCE Applications menu icon helper
+  ansible.builtin.copy:
+    src: xfce/set-applications-icon.sh
+    dest: /usr/local/bin/codex-xfce-applications-icon
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install the XFCE bottom panel helper
+  ansible.builtin.copy:
+    src: xfce/disable-bottom-panel.sh
+    dest: /usr/local/bin/codex-xfce-disable-bottom-panel
+    owner: root
+    group: root
+    mode: '0755'
+
 - name: Configure the desktop at XFCE login
   become_user: "{{ local_username }}"
   block:
@@ -92,6 +124,28 @@
       ansible.builtin.file:
         path: ~/.config/autostart
         state: directory
+
+    - name: Apply the inverted pentagram icon in the user's XFCE session
+      ansible.builtin.copy:
+        dest: ~/.config/autostart/codex-applications-icon.desktop
+        mode: '0644'
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=Set XFCE Applications menu icon
+          Exec=/usr/local/bin/codex-xfce-applications-icon
+          OnlyShowIn=XFCE;
+
+    - name: Disable the bottom XFCE launcher panel at login
+      ansible.builtin.copy:
+        dest: ~/.config/autostart/codex-disable-bottom-panel.desktop
+        mode: '0644'
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=Disable the bottom XFCE launcher panel
+          Exec=/usr/local/bin/codex-xfce-disable-bottom-panel
+          OnlyShowIn=XFCE;
 
     - name: Disable light-locker autostart for the desktop user
       ansible.builtin.copy:
@@ -125,7 +179,7 @@
           Exec=xfconf-query -c xsettings -p /Net/ThemeName --create -t string -s Greybird-dark
           OnlyShowIn=XFCE;
 
-    - name: Limit the user's XFCE session to one workspace
+    - name: Configure two workspaces for the user's XFCE session
       ansible.builtin.copy:
         dest: ~/.config/autostart/codex-workspaces.desktop
         mode: '0644'
@@ -133,7 +187,7 @@
           [Desktop Entry]
           Type=Application
           Name=Set XFCE workspace count
-          Exec=xfconf-query -c xfwm4 -p /general/workspace_count --create -t int -s 1
+          Exec=xfconf-query -c xfwm4 -p /general/workspace_count --create -t int -s 2
           OnlyShowIn=XFCE;
 
     - name: Enable edge and corner snapping when dragging XFCE windows
