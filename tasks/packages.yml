@@ -101,6 +101,35 @@
   ansible.builtin.package_facts:
     manager: apt
 
+- name: Install the VSCodium repository signing key
+  ansible.builtin.get_url:
+    url: https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg
+    dest: /usr/share/keyrings/vscodium-archive-keyring.asc
+    owner: root
+    group: root
+    mode: '0644'
+    force: true
+
+- name: Configure the VSCodium APT repository
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/vscodium.sources
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      Types: deb
+      URIs: https://download.vscodium.com/debs
+      Suites: vscodium
+      Components: main
+      Architectures: amd64 arm64
+      Signed-By: /usr/share/keyrings/vscodium-archive-keyring.asc
+
+- name: Install VSCodium
+  ansible.builtin.apt:
+    name: codium
+    state: present
+    update_cache: "{{ 'codium' not in ansible_facts.packages }}"
+
 - name: Install Google Chrome Stable
   ansible.builtin.apt:
     deb: "https://dl.google.com/linux/direct/google-chrome-stable_current_{{ ansible_facts.packages.dpkg[0].arch }}.deb"

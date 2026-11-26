@@ -1,4 +1,19 @@
 ---
+- name: Configure VSCodium for the desktop user
+  become_user: "{{ local_username }}"
+  block:
+    - name: Create the VSCodium user settings directory
+      ansible.builtin.file:
+        path: ~/.config/VSCodium/User
+        state: directory
+        mode: '0755'
+
+    - name: Install the VSCodium user settings
+      ansible.builtin.copy:
+        src: vscodium/settings.json
+        dest: ~/.config/VSCodium/User/settings.json
+        mode: '0644'
+
 - name: Set the Codex user's global Git identity
   become_user: "{{ local_username }}"
   community.general.git_config:

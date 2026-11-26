@@ -1,0 +1,15 @@
+{
+    "workbench.colorTheme": "Visual Studio Dark",
+    "workbench.startupEditor": "none",
+    "workbench.tree.indent": 18,
+    "files.autoSave": "afterDelay",
+    "editor.minimap.enabled": false,
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/*.pyc": true
+    },
+    "git.confirmSync": false,
+    "explorer.confirmDelete": false,
+    "git.enableSmartCommit": true,
+    "security.workspace.trust.enabled": false
+}
