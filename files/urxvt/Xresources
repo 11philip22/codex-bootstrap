@@ -21,5 +21,6 @@ URxvt.italicFont: -*-terminus-medium-r-*-*-14-*-*-*-*-*-iso10646-1
 URxvt.boldItalicFont: -*-terminus-bold-r-*-*-14-*-*-*-*-*-iso10646-1
 URxvt.keysym.Control-V: eval:paste_clipboard
 URxvt.keysym.Control-C: eval:selection_to_clipboard
+URxvt.keysym.Control-Return: \012
 
 URxvt.geometry: 150x40
