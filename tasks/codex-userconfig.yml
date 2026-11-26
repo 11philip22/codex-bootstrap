@@ -1,4 +1,20 @@
 ---
+- name: Configure Bash tab completion for the desktop user
+  become_user: "{{ local_username }}"
+  ansible.builtin.blockinfile:
+    path: ~/.bashrc
+    create: true
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: Bash tab completion"
+    block: |
+      if [[ $- == *i* ]]; then
+          if ! declare -F _completion_loader >/dev/null; then
+              . /usr/share/bash-completion/bash_completion
+          fi
+          bind '"\C-i": menu-complete'
+          bind '"\e[Z": menu-complete-backward'
+          bind 'set show-all-if-ambiguous on'
+      fi
+
 - name: Configure VSCodium for the desktop user
   become_user: "{{ local_username }}"
   block:
