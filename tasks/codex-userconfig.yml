@@ -72,6 +72,19 @@
     group: root
     mode: '0755'
 
+- name: Enable GTK platform integration for Qt in XFCE X11 sessions
+  ansible.builtin.copy:
+    dest: /etc/X11/Xsession.d/56codex-xfce-qt-theme
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      case "$BASESTARTUP" in
+          startxfce4|xfce4-session|deskflow-locked-xfce)
+              export QT_QPA_PLATFORMTHEME=gtk3
+              ;;
+      esac
+
 - name: Configure the desktop at XFCE login
   become_user: "{{ local_username }}"
   block:
@@ -89,6 +102,28 @@
           Type=Application
           Name=Light Locker
           Hidden=true
+
+    - name: Set elementary Xfce as the user's icon theme
+      ansible.builtin.copy:
+        dest: ~/.config/autostart/codex-icon-theme.desktop
+        mode: '0644'
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=Set XFCE icon theme
+          Exec=xfconf-query -c xsettings -p /Net/IconThemeName --create -t string -s elementary-xfce
+          OnlyShowIn=XFCE;
+
+    - name: Set Greybird-dark as the user's GTK theme
+      ansible.builtin.copy:
+        dest: ~/.config/autostart/codex-gtk-theme.desktop
+        mode: '0644'
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=Set XFCE GTK theme
+          Exec=xfconf-query -c xsettings -p /Net/ThemeName --create -t string -s Greybird-dark
+          OnlyShowIn=XFCE;
 
     - name: Apply the stars wallpaper in the user's XFCE session
       ansible.builtin.copy:

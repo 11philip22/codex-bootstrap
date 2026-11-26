@@ -23,6 +23,10 @@
       - ripgrep
       - htop
       - deskflow
+      - elementary-xfce-icon-theme
+      - greybird-gtk-theme
+      - qt5-gtk-platformtheme
+      - qt6-gtk-platformtheme
       - i3lock
       - x11-xserver-utils
       - rxvt-unicode
