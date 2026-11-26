@@ -13,7 +13,7 @@ urxvt*foreground: #ffffff
 
 URxvt.cursorColor: magenta
 
-URxvt.perl-ext-common: resize-font
+URxvt.perl-ext-common: tabbed,resize-font
 
 URxvt.font: -*-terminus-medium-r-*-*-14-*-*-*-*-*-iso10646-1
 URxvt.boldFont: -*-terminus-bold-r-*-*-14-*-*-*-*-*-iso10646-1

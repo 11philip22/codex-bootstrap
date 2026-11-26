@@ -125,6 +125,28 @@
           Exec=xfconf-query -c xsettings -p /Net/ThemeName --create -t string -s Greybird-dark
           OnlyShowIn=XFCE;
 
+    - name: Limit the user's XFCE session to one workspace
+      ansible.builtin.copy:
+        dest: ~/.config/autostart/codex-workspaces.desktop
+        mode: '0644'
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=Set XFCE workspace count
+          Exec=xfconf-query -c xfwm4 -p /general/workspace_count --create -t int -s 1
+          OnlyShowIn=XFCE;
+
+    - name: Enable edge and corner snapping when dragging XFCE windows
+      ansible.builtin.copy:
+        dest: ~/.config/autostart/codex-window-snapping.desktop
+        mode: '0644'
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=Enable XFCE window snapping
+          Exec=sh -c "xfconf-query -c xfwm4 -p /general/wrap_windows --create -t bool -s false && xfconf-query -c xfwm4 -p /general/tile_on_move --create -t bool -s true"
+          OnlyShowIn=XFCE;
+
     - name: Apply the stars wallpaper in the user's XFCE session
       ansible.builtin.copy:
         dest: ~/.config/autostart/codex-wallpaper.desktop
