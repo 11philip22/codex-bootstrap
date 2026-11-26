@@ -1,4 +1,14 @@
 ---
+- name: Set the Codex user's global Git identity
+  become_user: "{{ local_username }}"
+  community.general.git_config:
+    scope: global
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+  loop:
+    - { name: user.name, value: "11philip22" }
+    - { name: user.email, value: "philipwoldhek@gmail.com" }
+
 - name: Create the local wallpapers directory
   ansible.builtin.file:
     path: /usr/local/share/backgrounds
