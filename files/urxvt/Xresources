@@ -8,7 +8,8 @@ URxvt.scrollBar: false
 *foreground: #FF9900
 
 urxvt*depth: 32
-urxvt*background: rgba:0000/0000/0200/c800
+urxvt*background: #000000
+urxvt*foreground: #ffffff
 
 URxvt.cursorColor: magenta
 
